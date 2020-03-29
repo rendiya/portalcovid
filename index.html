@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Portal Donasi</title>
+  <link rel="icon" href="img/mdb-favicon.ico" type="image/x-icon">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+  <!-- Google Fonts Roboto -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+  <!-- Bootstrap core CSS -->
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <!-- Material Design Bootstrap -->
+  <link rel="stylesheet" href="css/mdb.min.css">
+  <!-- Your custom styles (optional) -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <!--Navbar -->
+    <nav class="mb-1 navbar navbar-expand-lg navbar-dark base-color">
+      <!-- <a class="navbar-brand" href="#">Portal Donasi covid-19</a> -->
+      <form class="navbar-brand col-lg-8 navbar-mid">
+        <div class="md-form my-0">
+          <input class="form-control mr-sm-5" type="text" placeholder="Telusuri Kota" aria-label="Search">
+        </div>
+      </form>
+    </nav>
+    <!--/.Navbar -->
+  </header>
+
+  <div class="view margin-view">
+    <div class="row always-mid">
+      <div class="row margin-view">
+        <h3>Portal Donasi covid-19</h3>
+        <p>menyediakan informasi tepat dan terpercaya untuk menyalurkan donasi untuk pendemi covid-19 di Indonesia</p>
+      </div>
+      <div class="row margin-view" id="isitext">
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="always-mid">
+    <div id="div_pagination">
+      <input type="hidden" id="txt_rowid" value="0">
+      <input type="hidden" id="txt_allcount" value="0">
+      <!-- <input type="button" class="button" value="Previous" id="but_prev" /> -->
+
+      <!-- <input type="button" class="button" value="Next" id="but_next" /> -->
+  </div>
+  </div>
+
+  <div class="always-mid">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination pg-blue" id="extra_page">
+        <li class="page-item" id="prev">
+          <a class="page-link" id="but_prev">Previous</a>
+        </li>
+        <li class="page-item" id="next">
+          <a class="page-link next" id="but_next">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Footer -->
+  <footer class="page-footer font-small base-color pt-4">
+
+    <!-- Footer Text -->
+    <div class="container-fluid text-center text-md-left">
+
+      <!-- Grid row -->
+      <div class="row">
+
+        <!-- Grid column -->
+        <div class="col-md-6 mt-md-0 mt-3">
+
+          <!-- Content -->
+          <p>terima kasih atas kepedulian anda</p>
+
+        </div>
+        <!-- Grid column -->
+
+        <hr class="clearfix w-100 d-md-none pb-3">
+
+        <!-- Grid column -->
+        <div class="col-md-6 mb-md-0 mb-3">
+
+          <!-- Content -->
+          <a class="margin-sosmed" href="#">
+            <i class="fab fa-facebook-f"></i> Facebook
+          </a>
+          <a class="margin-sosmed" href="#">
+            <i class="fab fa-instagram"></i> Instagram
+          </a>
+          <a href="#">
+            <i class="fab fa-twitter"></i> Twitter
+          </a>
+          </li>
+
+        </div>
+        <!-- Grid column -->
+
+      </div>
+      <!-- Grid row -->
+
+    </div>
+    <!-- Footer Text -->
+
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2020 Copyright:
+      <a href="https://mdbootstrap.com/"> Nganu.com</a>
+    </div>
+    <!-- Copyright -->
+
+  </footer>
+  <!-- Footer -->
+  <!-- jQuery -->
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <!-- Bootstrap tooltips -->
+  <script type="text/javascript" src="js/popper.min.js"></script>
+  <!-- Bootstrap core JavaScript -->
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <!-- MDB core JavaScript -->
+  <script type="text/javascript" src="js/mdb.min.js"></script>
+  <!-- Your custom scripts (optional) -->
+  <script type="text/javascript"></script>
+  <script type="text/javascript">
+    // Total number of rows visible at a time
+    var rowperpage = 1;
+    $(document).ready(function () {
+
+      getData();  // getting data
+
+      $("#but_prev").click(function () {
+        var rowid = Number($("#txt_rowid").val());
+        var allcount = Number($("#txt_allcount").val());
+        rowid -= rowperpage;
+        if (rowid < 0) {
+          rowid = 0;
+        }
+        $("#txt_rowid").val(rowid);
+        getData();
+      });
+
+      $("#but_next").click(function () {
+        var rowid = Number($("#txt_rowid").val());
+        var allcount = Number($("#txt_allcount").val());
+        rowid += rowperpage;
+        if (rowid <= allcount) {
+
+          $("#txt_rowid").val(rowid);
+          getData();
+        }
+
+      });
+    });
+
+    /* requesting data */
+    function getData() {
+      var rowid = $("#txt_rowid").val();
+      var allcount = $("#txt_allcount").val();
+
+      $.ajax({
+        url: 'getdata.php',
+        type: 'get',
+        data: { rowid: rowid, rowperpage: rowperpage },
+        dataType: 'json',
+        success: function (response) {
+          createTablerow(response);
+        }
+      });
+
+    }
+
+    /* Create Table */
+    function createTablerow(data) {
+      var rowid = Number($("#txt_rowid").val());
+      var prev = document.getElementById("prev");
+      var next = document.getElementById("next");
+      var dataLen = data.length;
+
+      // disable prev next
+      if (rowid == 0) {
+        prev.className += " disabled";
+        next.classList.remove("disabled");
+      }
+      else if (rowid == allcount) {
+        next.className += " disabled";
+        $("#txt_rowid").val(allcount);
+      }
+      else {
+        next.classList.remove("disabled");
+        prev.classList.remove("disabled");
+      }
+
+      
+      for (var i = 0; i < dataLen; i++) {
+        if (i == 0) {
+          var allcount = data[i]['allcount'];
+          $("#txt_allcount").val(allcount);
+        } 
+        else {
+          document.getElementById("isitext").innerHTML = "";
+          var id = data[i]['empid'];
+          var name = data[i]['empname'];
+          var salary = data[i]['salary'];
+          var image = 'img/family.svg'
+          
+          $("#isitext").append("<div class='col-sm-3 my-auto' id='img_ke"+i+"'><img src='img/family.svg'></div>");
+          $("#isitext").append("<div class='col-sm-8' id='profile_ke"+i+"'>"+name+"<div>");
+          $("#profile_ke"+i).append("<p class='p-size'><strong>Jakarta</strong></p>");
+          $("#profile_ke"+i).append("<p class='p-size'><strong>"+rowid+"</strong></p>");
+          $("#profile_ke"+i).append("<p class='p-size'>Sabun cuci tangan atau hand sanitizer</p>");
+        }
+      }
+
+      var size = rowperpage;
+      var totalPages = Math.ceil(allcount / size);
+      var currentPage = rowid;
+      var maxPages = 5;
+      var pageSize = rowperpage;
+      var endPage;
+      var startPage;
+      var totalItems = allcount;
+      if (totalPages <= maxPages) {
+          // total pages less than max so show all pages
+          startPage = 1;
+          endPage = totalPages;
+      } else {
+          // total pages more than max so calculate start and end pages
+          let maxPagesBeforeCurrentPage = Math.floor(maxPages / 2);
+          let maxPagesAfterCurrentPage = Math.ceil(maxPages / 2) - 1;
+          if (currentPage <= maxPagesBeforeCurrentPage) {
+              // current page near the start
+              startPage = 1;
+              endPage = maxPages;
+          } else if (currentPage + maxPagesAfterCurrentPage >= totalPages) {
+              // current page near the end
+              startPage = totalPages - maxPages + 1;
+              endPage = totalPages;
+          } else {
+              // current page somewhere in the middle
+              startPage = currentPage - maxPagesBeforeCurrentPage;
+              endPage = currentPage + maxPagesAfterCurrentPage;
+          }
+      }
+      let startIndex = (currentPage - 1) * pageSize;
+      let endIndex = Math.min(startIndex + pageSize - 1, totalItems - 1);
+
+      // create an array of pages to ng-repeat in the pager control
+      let pages = Array.from(Array((endPage + 1) - startPage).keys()).map(i => startPage + i);
+      console.log(pages)
+
+      for (let index = 0; index < pages.length; index++) {
+        // console.log(pages[index])
+        // document.getElementById("prev").innerHTML = "";
+        // var myimg = document.getElementById('prev');
+        // myimg.insertAdjacentHTML("afterend", "<li class='page-item'><a class='page-link'>"+pages[index]+"</a></li>");
+        // $("#extra_page").append("<li class='page-item'><a class='page-link'>"+pages[index]+"</a></li>");
+        // <li class='page-item'><a class='page-link'>3</a></li>
+      }
+    }
+  </script>
+</body>
+
+</html>
